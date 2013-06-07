@@ -1,0 +1,34 @@
+function parse_git_branch {
+  ref=$(git symbolic-ref HEAD 2> /dev/null) || return
+  echo " ("${ref#refs/heads/}")" 
+}
+
+function parse_user {
+ echo ${debian_chroot:+($debian_chroot)}$(whoami |sed 's/^.*\\//')
+}
+
+function set_custom_prompt {
+  local  PREV_RET=$?;
+  local    YELLOW="\[\033[0;33m\]"
+  local END_COLOR="\[\033[0m\]"
+  local      BLUE="\[\033[0;34m\]"
+  local     GREEN="\[\033[0;32m\]"
+  local       RED="\[\033[0;31m\]"
+
+  case $TERM in
+    xterm*)
+    TITLEBAR='\[\033]0;\u@\h:\w\007\]'
+    ;;
+    *)
+    TITLEBAR=""
+    ;;
+  esac
+
+PS1="${TITLEBAR}\
+$BLUE$(parse_user)@\h:\W\
+$YELLOW\$(parse_git_branch)\
+$RED $PREV_RET\
+$END_COLOR > "
+}
+PROMPT_COMMAND=set_custom_prompt
+

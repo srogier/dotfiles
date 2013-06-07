@@ -1,0 +1,20 @@
+# some more ls aliases
+alias ll='ls -aiohF'
+alias la='ls -A'
+alias l='ls -CF'
+
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+    . /etc/bash_completion
+fi
+
+PS1="${debian_chroot:+($debian_chroot)}$(whoami |sed 's/^.*\\//')@\h:\w$ "
+
+if [ -d $HOME/local/bin ] 
+then
+    export PATH="$HOME/local/bin:$PATH";
+fi
+
+
+
+
+

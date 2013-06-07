@@ -1,0 +1,41 @@
+[user]
+    name = Sébastien Rogier
+    email = sebrogier@gmail.com
+
+[color]
+    branch = auto
+    diff   = auto
+    status = auto
+    ui     = true
+[alias]
+    st        = status
+    co        = checkout
+    br        = branch
+    lg        = log --pretty=oneline --graph
+    logfull   = log --pretty=fuller --graph --stat -p
+    unstage   = reset HEAD
+    gui       = !gitg&
+    poule     = !git stash && git pull && git stash pop
+    ci           = commit
+    amend     = commit --amend
+    lol       = log --graph --decorate --pretty=oneline --abbrev-commit
+    review    = !git diff `git merge-base HEAD $1`..HEAD
+    delorig   = "!find -iname *.orig -delete"
+    cra = "!f() { echo git log --pretty=format:\\\"%h %cr %Cred %an %Cgreen %s \\\" --since=\\`date +%Y-%m-%d --date \\'$1 -12 day\\'\\` --until=$1 --branches --author=\\\"\\`git config user.name\\`\\\" | sh; }; f"
+    cp        = cherry-pick
+
+
+[branch]
+    autosetupmerge = true
+    default = tracking
+[gc]
+    auto = 0
+[core]
+    editor = vi
+    filemode = false
+    excludesfile = ~/dotfiles/git/.global_ignore
+[github]
+    user = srogier
+    token = 42
+[push]
+    default = tracking
