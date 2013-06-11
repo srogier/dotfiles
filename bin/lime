@@ -1,0 +1,110 @@
+#!/usr/bin/env php
+<?php
+if(count($_SERVER['argv']) === 1 || null === getPath()) {
+	fwrite(STDOUT, "---> \033[0;31mUsage :\033[0m lime [--quiet] [--no-loop] <path/to/[test_file.php|test_directory]>" . PHP_EOL);
+	exit(1);
+}
+
+function getPath() {
+	$index = count($_SERVER['argv']) - 1;
+
+	return isset($_SERVER['argv'][$index]) ? $_SERVER['argv'][$index] : null;
+}
+
+function isQuiet() {
+	return in_array('--quiet', $_SERVER['argv']);
+}
+
+function noLoop() {
+	return in_array('--no-loop', $_SERVER['argv']);
+}
+
+function askLoop() { 
+	fwrite(STDOUT, "---> Press \033[0;32m[Enter] to relaunch\033[0m the test suite or \033[0;31m[CTRL+C] (or any other character) to stop\033[0m  ");
+	$answer = trim(fgets(STDIN));
+
+	return $answer === '';
+}
+
+function makeRelative($path) {
+	$cwd = getcwd();
+
+	return str_replace($cwd, '', $path);	
+}
+
+function launchTest($path) {
+	$files = getTestFiles($path);
+	$loopFiles = array();
+	$fail = 0;
+	$success = 0;
+
+	foreach($files as $file) {
+		$str = sprintf("  ---> Starting test : %s  ", makeRelative($file));
+		fwrite(STDOUT, sprintf("\033[1;42m%s\033[0m" . PHP_EOL, str_pad('', strlen($str), ' ')));
+		fwrite(STDOUT, sprintf("\033[1;42m%s\033[0m" . PHP_EOL, $str));
+		fwrite(STDOUT, sprintf("\033[1;42m%s\033[0m" . PHP_EOL . PHP_EOL, str_pad('', strlen($str), ' ')));
+
+		$status = 0;
+		passthru(sprintf(' env FORCE_COLOR=true php %s%s', $file, isQuiet() ? ' > /dev/null 2>&1' : ''), $status);
+
+		$str = sprintf("  ---> Test status : %d  ", $status);
+		$color = $status == 0 ? 2 : 1;
+		fwrite(STDOUT, sprintf("\033[1;4%dm%s\033[0m" . PHP_EOL, $color, str_pad('', strlen($str), ' ')));
+		fwrite(STDOUT, sprintf("\033[1;4%dm%s\033[0m" . PHP_EOL, $color, $str));
+		fwrite(STDOUT, sprintf("\033[1;4%dm%s\033[0m" . PHP_EOL . PHP_EOL, $color, str_pad('', strlen($str), ' ')));
+
+		if(0 !== $status) {
+			$loopFiles[] = $file;
+			$fail++;
+		} else {
+			$success++;
+		}
+	}
+
+	$str = sprintf("---> \033[0;31mFail : %d\033[0m  " . PHP_EOL, $fail);
+	$str .= sprintf("---> \033[0;32mSuccess : %d\033[0m  " . PHP_EOL, $success);		
+	$str .= sprintf("---> Total : %d  " . PHP_EOL, $success + $fail);
+	fwrite(STDOUT, sprintf($str));	
+
+	return $loopFiles;
+}
+
+function getTestFiles($path) {
+	switch(true) {
+		case is_array($path):
+			return $path;
+			break;
+		case is_dir($path):
+			return array_merge(
+				glob(rtrim($path, '/') . '/*Test.php'),
+				glob(rtrim($path, '/') . '/**/*Test.php')
+			);
+			break;
+		case is_file($path):
+			return (array)$path;
+			break;		
+		default:
+			fwrite(STDOUT, "---> \033[0;31mInvalid path : not a directory or file does not exist!\033[0m" . PHP_EOL);
+			exit(1);
+			break;
+	}
+}
+
+passthru('clear');
+
+if(!isset($file)) {
+	$file = realpath(getPath());
+	$file = launchTest($file);
+}
+
+if(false === noLoop()) {
+	while(askLoop())
+	{
+		$file = launchTest($file);
+
+		if(true === empty($file)) {
+			$file = realpath(getPath());
+			$file = launchTest($file);
+		}
+	}
+}
