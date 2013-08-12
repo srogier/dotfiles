@@ -24,7 +24,7 @@ println "Starting dotfiles installation" $BLUE
 println "Setting up the symbolic links" $GREEN
 
 ln -siv $HOME/dotfiles/.zshrc $HOME
-ln -siv $HOME/dotfiles/.gitconfig $HOME
+ln -siv $HOME/dotfiles/git/.gitconfig $HOME
 ln -siv $HOME/dotfiles/oh-my-zsh $HOME/.oh-my-zsh/custom/
 
 # load gnome-terminal configuration
