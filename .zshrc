@@ -38,4 +38,4 @@ source $ZSH/oh-my-zsh.sh
 unsetopt correct_all
 
 # Customize to your needs...
-export PATH=$HOME/local/bin:/usr/lib/jvm/jdk1.7.0/bin:$HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$HOME/scripts:/usr/local/bin/:/opt/vagrant/bin
+export PATH=$HOME/local/bin:/usr/lib/jvm/jdk1.7.0/bin:$HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$HOME/dotfiles/bin:/usr/local/bin/:/opt/vagrant/bin
